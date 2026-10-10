@@ -1,0 +1,6 @@
+# Relay-only environment: no model, Worker, Milvus or desktop dependencies.
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+sqlalchemy>=2,<3
+websockets>=16,<17
+python-dotenv>=1,<2

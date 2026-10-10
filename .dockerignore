@@ -1,0 +1,16 @@
+.venv
+.uv-cache
+__pycache__
+**/__pycache__
+.pytest_cache
+.tmp
+.pytest-*
+research_agent.egg-info
+frontend/node_modules
+frontend/dist
+frontend/.npm-cache
+.env
+.git
+*.db
+*.db-shm
+*.db-wal

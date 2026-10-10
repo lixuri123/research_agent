@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "local-research": {
+      "enabled": false,
+      "transport": "stdio",
+      "command": "uv",
+      "args": ["run", "python", "path/to/your_mcp_server.py"],
+      "env": {},
+      "timeout": 60,
+      "allowed_tools": ["search_papers", "read_page"],
+      "read_only_tools": ["search_papers", "read_page"]
+    },
+    "research-http": {
+      "enabled": false,
+      "transport": "streamable-http",
+      "url": "http://127.0.0.1:9000/mcp",
+      "headers": {},
+      "timeout": 60,
+      "allowed_tools": ["search_papers", "save_note"],
+      "read_only_tools": ["search_papers"]
+    },
+    "research-sse": {
+      "enabled": false,
+      "transport": "sse",
+      "url": "http://127.0.0.1:9001/sse",
+      "headers": {"Authorization": "Bearer ${RESEARCH_MCP_TOKEN}"},
+      "timeout": 60,
+      "allowed_tools": ["search_papers"],
+      "read_only_tools": ["search_papers"]
+    }
+  }
+}

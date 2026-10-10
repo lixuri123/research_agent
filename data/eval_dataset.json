@@ -1,0 +1,20 @@
+[
+  {
+    "topic": "Transformer 模型在自然语言处理中的应用",
+    "requirements": "总结 Transformer 架构的核心机制与主要应用场景",
+    "expected_keywords": ["attention", "Transformer", "self-attention"],
+    "expected_sources": []
+  },
+  {
+    "topic": "大语言模型的推理能力与思维链",
+    "requirements": "综述思维链提示（Chain-of-Thought）的最新研究进展",
+    "expected_keywords": ["chain-of-thought", "reasoning", "LLM"],
+    "expected_sources": []
+  },
+  {
+    "topic": "检索增强生成（RAG）技术综述",
+    "requirements": "介绍 RAG 的架构、优势与挑战",
+    "expected_keywords": ["retrieval", "augmented", "generation", "RAG"],
+    "expected_sources": []
+  }
+]

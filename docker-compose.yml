@@ -1,0 +1,88 @@
+# 向量库与缓存服务编排
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: research
+      POSTGRES_USER: research
+      POSTGRES_PASSWORD: research
+    volumes:
+      - research_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U research -d research"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    env_file: .env
+    environment: &application_env
+      DATABASE_URL: postgresql+psycopg://research:research@postgres:5432/research
+      CHECKPOINT_URL: postgresql://research:research@postgres:5432/research
+      MEMORY_MARKDOWN_DIR: /app/data/memories
+      MILVUS_HOST: milvus
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - research_memories:/app/data/memories
+      - ./config:/app/config:ro
+      - ./skills:/app/skills:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  worker:
+    build: .
+    env_file: .env
+    environment: *application_env
+    volumes:
+      - research_memories:/app/data/memories
+      - ./config:/app/config:ro
+      - ./skills:/app/skills:ro
+    command: ["python", "-m", "research_agent.worker"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  etcd:
+    profiles: [knowledge]
+    image: quay.io/coreos/etcd:v3.5.5
+    environment:
+      - ETCD_AUTO_COMPACTION_MODE=revision
+      - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+    command: etcd -advertise-client-urls=http://etcd:2379 -listen-client-urls=http://0.0.0.0:2379 --data-dir /etcd
+
+  minio:
+    profiles: [knowledge]
+    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    command: minio server /minio_data
+
+  milvus:
+    profiles: [knowledge]
+    image: milvusdb/milvus:v2.4.0
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+    depends_on:
+      - etcd
+      - minio
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+
+  redis:
+    profiles: [knowledge]
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  research_pg:
+  research_memories:
